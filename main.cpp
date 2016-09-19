@@ -3,13 +3,15 @@
 #include "Meteoro.h"
 using namespace std;
 
-#define LARGURA  600
-#define ALTURA   600
-
+#define LARGURA  800
+#define ALTURA   800
+#define qtdm 1000
 #define PI 3.14159265
 
 double rotationX = 0.0;
 double rotationY = 0.0;
+
+double moveZ = -10.0f;
 
 double zTranslation = 20.0f;
 double rotationShip = 0.0f;
@@ -17,7 +19,8 @@ double rotationShip = 0.0f;
 bool floating = true;
 bool goingRight = false;
 bool goingLeft = false;
-Meteoro *m = new Meteoro;
+
+Meteoro m[qtdm];
 
 void Anima(int value)  /* Usada quando se usar glutTimerFunc() */
 {
@@ -61,24 +64,28 @@ void Movimento(unsigned char key, int x, int y)
     switch (key) {
 		case 'W':
 		case 'w':
-			rotationY+= 1.0f;
+			rotationY-= 1.0f;
 			break;
 
 		case 'A':
 		case 'a':
 			goingLeft = true;
-			rotationX+= 1.0f;
+			rotationX-= 1.0f;
 			break;
 
 		case 'D':
 		case 'd':
 			goingRight = true;
-			rotationX-= 1.0f;
+			rotationX+= 1.0f;
 			break;
 
 		case 'S':
 		case 's':
-			rotationY-= 1.0f;
+			rotationY+= 1.0f;
+			break;
+		case 'p':
+		case 'P':
+			moveZ-=3;
 			break;
 
     }
@@ -88,44 +95,44 @@ void Movimento(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
-void ParametrosIluminacao()
+void ParametrosIluminacao(float c1, float c2, float c3, float c4)
 {
 	/* Parâmetros para a Luz GL_LIGHT0 sendo uma fonte de Luz Pontual */
 	GLfloat luzAmbiente[4]={1.0, 1.0, 1.0, 1.0};
 	GLfloat luzDifusa[4]={1.0, 1.0, 1.0, 1.0};
 	GLfloat luzEspecular[4]={1.0, 1.0, 1.0, 1.0};
-	GLfloat posicaoLuz[4]={1.0, 1.0, 1.0, 1.0};
+	GLfloat posicaoLuz[4]={50.0, 50.0, 50.0, 1.0};
 
-	/* Define os parâmetros da luz de número 0 (Luz Pontual) */
 	glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa );
 	glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular );
 	glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz );
 
-	/* Ativa o uso de uma fonte de luz ambiente */
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
 
 	/* Características do material */
-	GLfloat ka[4]={0.3, 0.2, 0.1, 1.0};		/* Reflete porcentagens da cor ambiente */
-	GLfloat kd[4]={0.1, 0.2, 0.2, 1.0};		/* Reflete porcentagens da cor difusa */
+	GLfloat ka[4]={c1/5 , c2/5 , c3/5, c4/5};		/* Reflete porcentagens da cor ambiente */
+	GLfloat kd[4]={c1,c2, c3, c4};			/* Reflete porcentagens da cor difusa */
 	GLfloat ks[4]={1.0, 1.0, 1.0, 1.0};		/* Reflete porcentagens da cor especular */
-	GLfloat shininess = 60.0;
+	GLfloat shininess = 100.0;
 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ka);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, kd);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, ks); /* Refletância do material */
-	glMaterialf(GL_FRONT, GL_SHININESS, shininess);   /* Concentração do brilho */
+	glMaterialf(GL_FRONT, GL_SHININESS, shininess); /* Concentração do brilho */
 }
 
 void criaNave(void){
 // Criando a nave...
 	glPushMatrix();
 	    glLoadIdentity();
-		glTranslatef(0.0, 0.0, -10.0);
+		ParametrosIluminacao(0.1, 0.9, 0.1, 1);
+		glTranslatef(0.0, 0.0, -10);
 		glRotatef(10, 1.0, 0.0, 0.0);
 		glRotatef(180, 0.0, 1.0, 0.0);
 		glRotatef(rotationShip, 0.0, 0.0, 1.0);
 
+		ParametrosIluminacao(1, 0, 0.1, 1);
 		glPushMatrix();
 			glTranslatef(1.8, 0.0, -1.0);
 			glutSolidCylinder(0.8, 1.8, 20, 20);
@@ -136,14 +143,14 @@ void criaNave(void){
 			glutSolidCylinder(0.8, 1.8, 20, 20);
 		glPopMatrix();
 
-		glColor3f(0.4, 0.8, 0.3);
+		ParametrosIluminacao(0.4, 0.8, 0.3,1);
 
 		glPushMatrix();
 			glTranslatef(0.0, 0.0, 4.0);
 			glutSolidTorus(0.3, 1.8, 20, 20);
 		glPopMatrix();
 
-		glColor3f(0.4, 0.3, 0.8);
+		ParametrosIluminacao(0.4, 0.3, 0.8,1);
 
 		glutSolidCone(1.0, 8.0, 20, 20);
 	glPopMatrix();
@@ -161,28 +168,20 @@ void Desenha(void)
      * olho = (0, 0, 30)
      * olhar = (0, 0, 0)
      * up = (0, 1, 0) */
-    glLoadIdentity();
-    gluLookAt(0.0, 0.0, 2.0,		/* eye */
-    		  0.0, 0.0, 0.0,		/* look */
-    		  0.0, 1.0, 0.0);		/* up */
+	glTranslatef(0.0, 0.0, -moveZ);
+	gluLookAt(0.0, 0.0, 2.0,		/* eye */
+			  0.0, 0.0, 0.0,		/* look */
+			  0.0, 1.0, 0.0);		/* up */
 
-    /* Rotaciona os objetos para visualizar a 3 dimensão */
+	/* Rotaciona os objetos para visualizar a 3 dimensão */
 	glRotatef(rotationY, 1.0, 0.0, 0.0); /* Rotaciona em torno do X */
 	glRotatef(rotationX, 0.0, 1.0, 0.0); /* Rotaciona em torno de Y */
-    ParametrosIluminacao();
-//	Desenha_Origem();
-//	Desenha_Eixos_Coordenados();
-	glColor3f(0.8, 0.4, 0.3);
-
-
-// Cubo para testes de camera... Só exemplo;
-//	glPushMatrix();
-//		glTranslatef(5.0f,5.0f,-zTranslation);
-//		glutSolidCube(2);
-//	glPopMatrix();
-	for(int i = 0; i < 50; i++)
-		m[i].drawCube();
 	criaNave();
+
+	ParametrosIluminacao(1, 1, 1, 1);
+
+	for(int i = 0; i < qtdm; i++)
+		m[i].drawCube(moveZ);
 	/* Executa os comandos OpenGL */
 	glFlush();
 }
@@ -198,7 +197,7 @@ void Inicializa (void)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//glOrtho(-10, 10, -10, 10, -50 ,50);
-	gluPerspective(120.0f, 1, 1, 1000.0f);
+	gluPerspective(90.0f, 1, 1, 1000.0f);
 
 	/* Indica qual o botao que acionará o menu */
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
@@ -217,7 +216,7 @@ void Inicializa (void)
 /* Programa Principal */
 int main(int argc, char **argv)
 {	
-	for(int i = 0; i < 50; i++){
+	for(int i = 0; i < qtdm; i++){
 		cout  << "x : "<< m[i].getX()<< " Y: " << m[i].getY() << " Z: " << m[i].getZ() << endl;
 	}
 	glutInit(&argc, argv);

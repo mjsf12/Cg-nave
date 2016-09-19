@@ -12,17 +12,18 @@
 #include <ctime>
 #include <GL/freeglut.h>
 #include <cmath>
+#include <unistd.h>
 
 class Meteoro {
 private:
-	float x,y,z;
+	float x,y,z,xWalk,yWalk,zWalk;
 	void initRandomSeed();
 	void setRandomSeed(int);
 	int randomReal(double,double);
 public:
 	Meteoro();
 	void setTranslate(float,float,float);
-	void drawCube();
+	void drawCube(float);
 	float getX();
 	float getY();
 	float getZ();
