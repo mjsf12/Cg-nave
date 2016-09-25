@@ -1,0 +1,4 @@
+/home/marcilio/c++/Cg-nave/Meteoro.h:11:19: fatal error: cstdlib: Arquivo ou diretório não encontrado
+ #include <cstdlib>
+                   ^
+compilation terminated.

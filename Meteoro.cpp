@@ -33,7 +33,7 @@ Meteoro::Meteoro() {
 	y = this->randomReal(-500,500);
 	z = this->randomReal(-500,500);
 	int side = (int)(this->randomReal(0,7));
-	
+
 	switch(side){
 		case 1:
 			xWalk =-1;
@@ -54,7 +54,7 @@ Meteoro::Meteoro() {
 			zWalk = 1;
 			break;
 	}
-	usleep(100);
+	//usleep(100);
 }
 
 void Meteoro::drawCube(float move){

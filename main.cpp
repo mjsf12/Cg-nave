@@ -1,11 +1,12 @@
 #include <cmath>
 #include <iostream>
+#include <vector>
 #include "Meteoro.h"
 using namespace std;
 
 #define LARGURA  800
 #define ALTURA   800
-#define qtdm 1000
+#define qtdm 10000
 #define PI 3.14159265
 
 double rotationX = 0.0;
@@ -20,7 +21,7 @@ bool floating = true;
 bool goingRight = false;
 bool goingLeft = false;
 
-Meteoro m[qtdm];
+std::vector<Meteoro> m;
 
 void Anima(int value)  /* Usada quando se usar glutTimerFunc() */
 {
@@ -180,8 +181,9 @@ void Desenha(void)
 
 	ParametrosIluminacao(1, 1, 1, 1);
 
-	for(int i = 0; i < qtdm; i++)
-		m[i].drawCube(moveZ);
+	 for (auto &e: m){
+		e.drawCube(moveZ);
+	}
 	/* Executa os comandos OpenGL */
 	glFlush();
 }
@@ -215,9 +217,10 @@ void Inicializa (void)
 
 /* Programa Principal */
 int main(int argc, char **argv)
-{	
-	for(int i = 0; i < qtdm; i++){
-		cout  << "x : "<< m[i].getX()<< " Y: " << m[i].getY() << " Z: " << m[i].getZ() << endl;
+{
+	for (size_t i = 0; i < qtdm; i++){
+		Meteoro aux;
+		m.push_back(aux);
 	}
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB);
@@ -230,7 +233,3 @@ int main(int argc, char **argv)
 	Inicializa();
 	glutMainLoop();
 }
-
-
-
-
