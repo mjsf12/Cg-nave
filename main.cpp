@@ -219,8 +219,8 @@ void Inicializa (void)
 int main(int argc, char **argv)
 {
 	for (size_t i = 0; i < qtdm; i++){
-		Meteoro aux;
-		m.push_back(aux);
+		Meteoro* aux = new Meteoro ();
+		m.push_back(*aux);
 	}
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB);

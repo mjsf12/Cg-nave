@@ -63,7 +63,7 @@ void Meteoro::drawCube(float move){
 	z += zWalk;
 	glPushMatrix();
 		glTranslatef(x,y,z);
-		glutSolidCube(2);
+		glutSolidSphere(2,5,5);
 	glPopMatrix();
 }
 
