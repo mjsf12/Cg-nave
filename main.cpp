@@ -2,21 +2,23 @@
 #include <vector>
 #include "Meteoro.h"
 
-#define LARGURA  800
-#define ALTURA   800
-#define qtdm 1000
+#define LARGURA  1280
+#define ALTURA   720
+#define qtdm 100
 #define PI 3.14159265
 
-double rotationX = 0.0;
-double rotationY = 0.0;
+double posX = 0.0;
+double posY = 0.0;
+
+bool nave = true;
 
 double moveZ = -10.0f;
 
 double zTranslation = 20.0f;
 double rotationShip = 0.0f;
 
-int raioColisao = 2;
-
+float raioColisao = 3.5;
+int ponto = 0;
 bool floating = true;
 bool goingRight = false;
 bool goingLeft = false;
@@ -32,30 +34,20 @@ void Anima(int value)  /* Usada quando se usar glutTimerFunc() */
 		zTranslation = 20.0f;
 
 	if(floating){
-		rotationShip = rotationShip + 0.5;
-		if(rotationShip > 8)
+		rotationShip = rotationShip + 1.5;
+		if(rotationShip > 45)
 			floating = false;
 	}
 	else{
-		rotationShip = rotationShip - 0.5;
-		if(rotationShip < -8)
+		rotationShip = rotationShip - 1.5;
+		if(rotationShip < -45)
 			floating = true;
 	}
 
-	if(rotationShip < 30 && goingRight)
-		rotationShip++;
-
-	if(rotationShip > 30){
-		goingRight = false;
-	}
-	if(rotationShip > -30 && goingLeft)
-		rotationShip--;
-
-	if(rotationShip < -30){
-		goingLeft = false;
-	}
 	glutPostRedisplay();
 	glutTimerFunc(100,Anima,1);
+	if(nave)
+		ponto+=1;
 }
 
 
@@ -65,24 +57,24 @@ void Movimento(unsigned char key, int x, int y)
     switch (key) {
 		case 'W':
 		case 'w':
-			rotationY-= 1.0f;
+			posY+= 1.0f;
 			break;
 
 		case 'A':
 		case 'a':
 			goingLeft = true;
-			rotationX-= 1.0f;
+			posX-= 1.0f;
 			break;
 
 		case 'D':
 		case 'd':
 			goingRight = true;
-			rotationX+= 1.0f;
+			posX+= 1.0f;
 			break;
 
 		case 'S':
 		case 's':
-			rotationY+= 1.0f;
+			posY-= 1.0f;
 			break;
 		case 'p':
 		case 'P':
@@ -127,8 +119,9 @@ void criaNave(void){
 // Criando a nave...
 	glPushMatrix();
 	    glLoadIdentity();
+		glTranslatef(posX,posY ,  0);
 		ParametrosIluminacao(0.1, 0.9, 0.1, 1);
-		glTranslatef(0.0, 0.0, -10);
+		glTranslatef(0.0, 0.0, -20);
 		glRotatef(10, 1.0, 0.0, 0.0);
 		glRotatef(180, 0.0, 1.0, 0.0);
 		glRotatef(rotationShip, 0.0, 0.0, 1.0);
@@ -169,38 +162,37 @@ void Desenha(void)
      * olho = (0, 0, 30)
      * olhar = (0, 0, 0)
      * up = (0, 1, 0) */
-	glTranslatef(0.0, 0.0, -moveZ);
 	gluLookAt(0.0, 0.0, 2.0,		/* eye */
 			  0.0, 0.0, 0.0,		/* look */
 			  0.0, 1.0, 0.0);		/* up */
-
 	/* Rotaciona os objetos para visualizar a 3 dimensão */
-	glRotatef(rotationY, 1.0, 0.0, 0.0); /* Rotaciona em torno do X */
-	glRotatef(rotationX, 0.0, 1.0, 0.0); /* Rotaciona em torno de Y */
-	criaNave();
-
-	ParametrosIluminacao(1, 1, 1, 1);
+	//glRotatef(posY, 1.0, 0.0, 0.0); /* Rotaciona em torno do X */
+	//glRotatef(posX, 0.0, 1.0, 0.0); /* Rotaciona em torno de Y */
+	if(nave)
+		criaNave();
 	int	count = 0;
-	int count_ =0;
 	ParametrosIluminacao(1, 0, 0, 1);
 	for (auto &e: m){
-		count = 0;
-		for (auto &f: m){
-			if((&e != &f)&&(e.getX() > f.getX() - raioColisao && e.getX() < f.getX() + raioColisao) 
-			&& (e.getY() > f.getY() - raioColisao && e.getY() < f.getY() + raioColisao) 
-			&& (e.getX() > f.getZ() - raioColisao && e.getZ() < f.getZ() + raioColisao)){
+		if(e.coletable){
+			ParametrosIluminacao(0, 1, 0, 1);
+		}		
+		if((e.getX() > posX - raioColisao && e.getX() < posX + raioColisao) 
+		&& (e.getY() > posY - raioColisao && e.getY() < posY + raioColisao) 
+		&& (e.getZ() > -24 -raioColisao && e.getZ() < -24 + raioColisao)){
+			if(e.coletable == false)
+				nave = false;
+			else if(nave){
+				ParametrosIluminacao(0, 1, 0, 1);
 				m.erase(m.begin() + count);
-				m.erase(m.begin() + count_);
-				e.collisor = true;
-				f.collisor = true;
+				count--;
+				ponto+=100;
 			}
-			count++;
 		}
-		count_++;
-		if(e.collisor == false)
-			e.drawCube(moveZ);
+		e.drawCube(0);
+		ParametrosIluminacao(1, 0, 0, 1);
+		count++;
 	}
-	cout<<m.size()<<endl;
+	cout<<"Pontos:"<<ponto<<endl;
 	/* Executa os comandos OpenGL */
 	glFlush();
 }
@@ -216,7 +208,7 @@ void Inicializa (void)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//glOrtho(-10, 10, -10, 10, -50 ,50);
-	gluPerspective(90.0f, 1, 1, 1000.0f);
+	gluPerspective(70.0f, 1, 1, 1000.0f);
 
 	/* Indica qual o botao que acionará o menu */
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
@@ -230,6 +222,20 @@ void Inicializa (void)
 
 	/* Modelos de Iluminação Defaut */
 	glShadeModel(GL_SMOOTH); 		/* Gouraud */
+}
+
+void GerenciaMouse(int button, int state, int x, int y)
+{
+    if (button == GLUT_LEFT_BUTTON){
+		if (state == GLUT_DOWN) {
+			nave = true;
+			ponto = 0;
+		}
+    }
+
+    /* Necessário chamar toda vez que se faz uma alteração ou evento na janela
+     * Indica a funcao glutMainLoop a chamar glutDisplayFunc com as alterações */
+    glutPostRedisplay();
 }
 
 /* Programa Principal */
@@ -246,6 +252,7 @@ int main(int argc, char **argv)
 	glutCreateWindow("Projecoes e Camera - Primitivas 3D");
 	glutDisplayFunc(Desenha);
 	glutKeyboardFunc(Movimento);
+	glutMouseFunc(GerenciaMouse);
 	glutTimerFunc(100, Anima, 1);
 	Inicializa();
 	glutMainLoop();

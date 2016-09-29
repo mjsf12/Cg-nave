@@ -18,18 +18,19 @@ using namespace std;
 
 class Meteoro {
 public:
-	int range = 300;
+	int range = 500;
 	float x,y,z,xWalk,yWalk,zWalk;
 	void initRandomSeed();
 	void setRandomSeed(int);
 	int randomReal(double,double);
-	bool collisor;
+	bool coletable;
 	Meteoro();
 	void setTranslate(float,float,float);
 	void drawCube(float);
 	float getX();
 	float getY();
 	float getZ();
+	void Reset();
 	virtual ~Meteoro();
 };
 
