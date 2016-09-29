@@ -228,7 +228,7 @@ void GerenciaMouse(int button, int state, int x, int y)
 {
     if (button == GLUT_LEFT_BUTTON){
 			nave = true;
-			ponto = 0;
+			ponto = 0;s
     }
 
     /* Necessário chamar toda vez que se faz uma alteração ou evento na janela
