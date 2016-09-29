@@ -220,12 +220,12 @@ void Desenha(void)
 		count++;
 	}
 	char string[64];
-	ParametrosIluminacao(0, 0.5, 1, 1);
+	ParametrosIluminacao(1, 1, 1, 1);
 	sprintf(string, "Pontos: %i",ponto);
 	printtext(10,10,string);
 	/* Executa os comandos OpenGL */
 	if(!nave){
-	ParametrosIluminacao(0, 0.5, 1, 1);
+	ParametrosIluminacao(1, 1, 1, 1);
 	char string2[64];
 	sprintf(string2, "Perdeu Click na tela para Jogar Novamente.");
 	printtext(ALTURA/2,LARGURA/2,string2);
