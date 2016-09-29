@@ -57,28 +57,24 @@ void Movimento(unsigned char key, int x, int y)
     switch (key) {
 		case 'W':
 		case 'w':
-			if(posY < 17)
-				posY+= 1.0f;
+			posY+= 1.0f;
 			break;
 
 		case 'A':
 		case 'a':
 			goingLeft = true;
-			if(posX > -17)
-				posX-= 1.0f;
+			posX-= 1.0f;
 			break;
 
 		case 'D':
 		case 'd':
 			goingRight = true;
-			if(posX < 17)
-				posX+= 1.0f;
+			posX+= 1.0f;
 			break;
 
 		case 'S':
 		case 's':
-			if(posY > -17)
-				posY-= 1.0f;
+			posY-= 1.0f;
 			break;
 		case 'p':
 		case 'P':
@@ -231,10 +227,8 @@ void Inicializa (void)
 void GerenciaMouse(int button, int state, int x, int y)
 {
     if (button == GLUT_LEFT_BUTTON){
-			posX = 0;
-			posY = 0;
 			nave = true;
-			ponto = 0;
+			ponto = 0;s
     }
 
     /* Necessário chamar toda vez que se faz uma alteração ou evento na janela

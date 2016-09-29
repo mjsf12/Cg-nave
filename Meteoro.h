@@ -13,20 +13,24 @@
 #include <GL/freeglut.h>
 #include <cmath>
 #include <unistd.h>
+#include <iostream>
+using namespace std;
 
 class Meteoro {
-private:
+public:
+	int range = 500;
 	float x,y,z,xWalk,yWalk,zWalk;
 	void initRandomSeed();
 	void setRandomSeed(int);
 	int randomReal(double,double);
-public:
+	bool coletable;
 	Meteoro();
 	void setTranslate(float,float,float);
 	void drawCube(float);
 	float getX();
 	float getY();
 	float getZ();
+	void Reset();
 	virtual ~Meteoro();
 };
 

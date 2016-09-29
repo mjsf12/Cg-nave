@@ -25,46 +25,39 @@ int Meteoro::randomReal(double low, double high) {
 	return (int)(floor(low + s));
 }
 Meteoro::Meteoro() {
+	coletable = false;
 	// TODO Auto-generated constructor stub
 	this->xWalk = 0;
 	this->yWalk = 0;
 	this->zWalk = 0;
-	x = this->randomReal(-500,500);
-	y = this->randomReal(-500,500);
-	z = this->randomReal(-500,500);
-	int side = (int)(this->randomReal(0,7));
-	
-	switch(side){
-		case 1:
-			xWalk =-1;
-			break;
-		case 2:
-			xWalk = 1;
-			break;
-		case 3:
-			yWalk =-1;
-			break;
-		case 4:
-			yWalk = 1;
-			break;
-		case 5:
-			zWalk =-1;
-			break;
-		case 6:
-			zWalk = 1;
-			break;
-	}
-	usleep(100);
+	x = this->randomReal(30,-30);
+	y = this->randomReal(-30, 30);
+	z = this->randomReal(-100,-range);
+	if(randomReal(0,100) > 80)
+		coletable = true;
+
+	zWalk = 5;
+	xWalk = 1;
+	yWalk = 1;
 }
 
 void Meteoro::drawCube(float move){
-	x += xWalk;
-	y += yWalk;
 	z += zWalk;
+	xWalk++;
+	
 	glPushMatrix();
 		glTranslatef(x,y,z);
-		glutSolidCube(2);
+		glutSolidSphere(2,5,5);
 	glPopMatrix();
+	Reset();
+}
+
+void Meteoro:: Reset(){
+	if(z  > 30){
+		x = this->randomReal(30,-30);
+		y = this->randomReal(-30, 30);
+		z = this->randomReal(-100,-range);
+	}
 }
 
 Meteoro::~Meteoro() {
