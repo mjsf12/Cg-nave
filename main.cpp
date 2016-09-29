@@ -1,12 +1,10 @@
 #include <cmath>
-#include <iostream>
 #include <vector>
 #include "Meteoro.h"
-using namespace std;
 
 #define LARGURA  800
 #define ALTURA   800
-#define qtdm 10000
+#define qtdm 1000
 #define PI 3.14159265
 
 double rotationX = 0.0;
@@ -16,6 +14,8 @@ double moveZ = -10.0f;
 
 double zTranslation = 20.0f;
 double rotationShip = 0.0f;
+
+int raioColisao = 2;
 
 bool floating = true;
 bool goingRight = false;
@@ -180,10 +180,27 @@ void Desenha(void)
 	criaNave();
 
 	ParametrosIluminacao(1, 1, 1, 1);
-
-	 for (auto &e: m){
-		e.drawCube(moveZ);
+	int	count = 0;
+	int count_ =0;
+	ParametrosIluminacao(1, 0, 0, 1);
+	for (auto &e: m){
+		count = 0;
+		for (auto &f: m){
+			if((&e != &f)&&(e.getX() > f.getX() - raioColisao && e.getX() < f.getX() + raioColisao) 
+			&& (e.getY() > f.getY() - raioColisao && e.getY() < f.getY() + raioColisao) 
+			&& (e.getX() > f.getZ() - raioColisao && e.getZ() < f.getZ() + raioColisao)){
+				m.erase(m.begin() + count);
+				m.erase(m.begin() + count_);
+				e.collisor = true;
+				f.collisor = true;
+			}
+			count++;
+		}
+		count_++;
+		if(e.collisor == false)
+			e.drawCube(moveZ);
 	}
+	cout<<m.size()<<endl;
 	/* Executa os comandos OpenGL */
 	glFlush();
 }
@@ -223,7 +240,7 @@ int main(int argc, char **argv)
 		m.push_back(*aux);
 	}
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGB);
+	glutInitDisplayMode(GLUT_RGB|GLUT_DEPTH);
 	glutInitWindowSize (LARGURA, ALTURA);
 	glutInitWindowPosition (100, 100);
 	glutCreateWindow("Projecoes e Camera - Primitivas 3D");
