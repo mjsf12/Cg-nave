@@ -57,24 +57,28 @@ void Movimento(unsigned char key, int x, int y)
     switch (key) {
 		case 'W':
 		case 'w':
-			posY+= 1.0f;
+			if(posY < 17)
+				posY+= 1.0f;
 			break;
 
 		case 'A':
 		case 'a':
 			goingLeft = true;
-			posX-= 1.0f;
+			if(posX > -17)
+				posX-= 1.0f;
 			break;
 
 		case 'D':
 		case 'd':
 			goingRight = true;
-			posX+= 1.0f;
+			if(posX < 17)
+				posX+= 1.0f;
 			break;
 
 		case 'S':
 		case 's':
-			posY-= 1.0f;
+			if(posY > -17)
+				posY-= 1.0f;
 			break;
 		case 'p':
 		case 'P':
@@ -227,6 +231,8 @@ void Inicializa (void)
 void GerenciaMouse(int button, int state, int x, int y)
 {
     if (button == GLUT_LEFT_BUTTON){
+			posX = 0;
+			posY = 0;
 			nave = true;
 			ponto = 0;
     }
