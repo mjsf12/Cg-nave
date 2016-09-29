@@ -22,7 +22,6 @@ int ponto = 0;
 bool floating = true;
 bool goingRight = false;
 bool goingLeft = false;
-
 std::vector<Meteoro> m;
 
 void Anima(int value)  /* Usada quando se usar glutTimerFunc() */
@@ -155,6 +154,29 @@ void criaNave(void){
 // Nave criada.
 }
 
+void printtext(int x, int y, string String)
+{
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0, LARGURA, 0, ALTURA, -1.0f, 1.0f);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glPushAttrib(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
+    glRasterPos2i(x,y);
+    for (int i=0; i<String.size(); i++)
+    {
+        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, String[i]);
+    }
+    glPopAttrib();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+}
+
 void Desenha(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -174,14 +196,15 @@ void Desenha(void)
 	//glRotatef(posX, 0.0, 1.0, 0.0); /* Rotaciona em torno de Y */
 	if(nave)
 		criaNave();
+
 	int	count = 0;
 	ParametrosIluminacao(1, 0, 0, 1);
 	for (auto &e: m){
 		if(e.coletable){
 			ParametrosIluminacao(0, 1, 0, 1);
-		}		
-		if((e.getX() > posX - raioColisao && e.getX() < posX + raioColisao) 
-		&& (e.getY() > posY - raioColisao && e.getY() < posY + raioColisao) 
+		}
+		if((e.getX() > posX - raioColisao && e.getX() < posX + raioColisao)
+		&& (e.getY() > posY - raioColisao && e.getY() < posY + raioColisao)
 		&& (e.getZ() > -24 -raioColisao && e.getZ() < -24 + raioColisao)){
 			if(e.coletable == false)
 				nave = false;
@@ -196,14 +219,20 @@ void Desenha(void)
 		ParametrosIluminacao(1, 0, 0, 1);
 		count++;
 	}
-	cout<<"Pontos:"<<ponto<<endl;
+	char string[64];
+	ParametrosIluminacao(0, 0.5, 1, 1);
+	sprintf(string, "Pontos: %i",ponto);
+	printtext(10,10,string);
 	/* Executa os comandos OpenGL */
+	if(!nave){
+	ParametrosIluminacao(0, 0.5, 1, 1);
+	char string2[64];
+	sprintf(string2, "Perdeu Click na tela para Jogar Novamente.");
+	printtext(ALTURA/2,LARGURA/2,string2);
+	}
 	glFlush();
+
 }
-
-
-
-
 
 /* Inicializa parâmetros de rendering */
 void Inicializa (void)
@@ -241,6 +270,7 @@ void GerenciaMouse(int button, int state, int x, int y)
      * Indica a funcao glutMainLoop a chamar glutDisplayFunc com as alterações */
     glutPostRedisplay();
 }
+
 
 /* Programa Principal */
 int main(int argc, char **argv)
